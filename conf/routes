@@ -1,0 +1,2 @@
+GET / controllers.Back.index
+GET /movie controllers.Back.getMovie(id: Int)
