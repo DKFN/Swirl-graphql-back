@@ -1,2 +1,5 @@
 GET / controllers.Back.index
 GET /movie controllers.Back.getMovie(id: Int)
+GET /search controllers.Back.search(query: String)
+GET /schema controllers.Back.schema()
+POST /graphql controllers.Back.graphql()

@@ -7,6 +7,5 @@ case class Movie(
   backdrop: String,
   releaseDate: String,
   director: String,
-  genres: Set[String],
   synopsis: String,
 )

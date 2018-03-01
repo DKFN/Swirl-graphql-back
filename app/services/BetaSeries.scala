@@ -3,6 +3,7 @@ package services
 import javax.inject.Inject
 
 import com.typesafe.play.cachecontrol.ResponseSelectionActions.GatewayTimeout
+import models.Movie
 import play.api.{Configuration, Logger}
 import play.api.libs.json.{JsError, JsValue, Json}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
@@ -54,7 +55,17 @@ class BetaSeries @Inject() (client: WSClient, config: Configuration) {
       Set(
         "id" -> id.toString,
         "type" -> "movie"
-      )).map(x => handleResponse(x))
+      )
+    ).map(x => handleResponse(x))
+  }
+
+  def getSearch(query: String): Future[JsValue] = {
+    get("search/all",
+      Set(
+        "query" -> query,
+        "limit" -> "20"
+      )
+    ).map(x => handleResponse(x))
   }
 
   /**
