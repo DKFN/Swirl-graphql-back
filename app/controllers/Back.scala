@@ -6,7 +6,6 @@ import akka.actor.ActorSystem
 import models.{MovieRepository, SchemaType}
 import play.api.Configuration
 import play.api.Logger
-import play.api.libs.json.Json
 import play.api.libs.json._
 import play.api.mvc._
 import sangria.ast.Document
@@ -14,6 +13,9 @@ import sangria.execution.{ErrorWithResolver, Executor, QueryAnalysisError}
 import sangria.macros._
 import sangria.renderer.SchemaRenderer
 import sangria.marshalling.playJson._
+import sangria.parser.QueryParser
+import sangria.ast.Document
+import scala.util._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import services.BetaSeries
@@ -52,29 +54,22 @@ class Back @Inject() (system: ActorSystem, config: Configuration, bsClient: Beta
     Ok(SchemaRenderer.renderSchema(SchemaType.schema))
   }
 
-  def graphql(): Action[AnyContent] = Action.async {
-    val query: Document =
-      graphql"""
-      query {
-        movie(id: 135) {
-          backdrop
-          poster
-          director
-          title
-        }
-      }
-  """
-    val res: Future[JsValue] = Executor.execute(
-      SchemaType.schema,
-      query,
-      new MovieRepository(bsClient)
-    )/*.recover {
-        case error: QueryAnalysisError => Json.toJson("error" -> error.getMessage)
-        case error: ErrorWithResolver => Json.toJson("error" -> error.getMessage)
-      }*/
-    res.map(x => {
-      Logger.info(x.toString)
-      Ok(Json.toJson(x))
-    })
+  def graphql(): Action[AnyContent] = Action.async { implicit request =>
+    val res = QueryParser.parse(request.body.asText.getOrElse("")) match {
+      case Success(qryAst: Document) => subExecutor(qryAst)
+      case Failure(err) => Future.successful(Json.toJson("Cannot parse query ast build failed"))
+    }
+    res.map(x => Ok(Json.toJson(x))
+   )
   }
+
+  def subExecutor(qry: Document) =
+    Executor.execute(
+      SchemaType.schema,
+      qry,
+      new MovieRepository (bsClient)
+    ).recover {
+      case error: QueryAnalysisError => Json.toJson(error.getMessage)
+      case error: ErrorWithResolver => Json.toJson(error.getMessage)
+    }
 }
