@@ -1,12 +1,5 @@
 package models
-
-import javax.lang.model.`type`.ArrayType
-
-import sangria.execution.deferred.Fetcher
 import sangria.schema._
-import services.BetaSeries
-
-import scala.concurrent.Future
 
 object SchemaType {
   val Id = Argument("id", IntType)

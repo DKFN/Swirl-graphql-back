@@ -9,7 +9,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class MovieRepository @Inject()(bsClient: BetaSeries) {
   def Movie(id: Int) = {
     val gotten = bsClient.getMovie(id)
-    gotten.map(x => {
+    gotten.map(z => {
+      val x = (z \ "movie").as[JsValue]
       new Movie(
         id,
         (x \ "title").as[String],

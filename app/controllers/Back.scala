@@ -17,6 +17,7 @@ import sangria.renderer.SchemaRenderer
 import scala.concurrent.ExecutionContext.Implicits.global
 import services.BetaSeries
 
+import scala.collection.immutable.ListMap
 import scala.concurrent.Future
 
 class Back @Inject() (system: ActorSystem, config: Configuration, bsClient: BetaSeries) extends InjectedController {
@@ -50,32 +51,26 @@ class Back @Inject() (system: ActorSystem, config: Configuration, bsClient: Beta
     Ok(SchemaRenderer.renderSchema(SchemaType.schema))
   }
 
-  def graphql(): Action[AnyContent] = Action {
+  def graphql(): Action[AnyContent] = Action.async {
     val query: Document =
       graphql"""
-    query MyProduct {
-      product(id: "2") {
-        name
-        description
-
-        picture(size: 500) {
-          width, height, url
+      query {
+        movie(id: 135) {
+          title
         }
       }
-
-      products {
-        name
-      }
-    }
   """
-    val res: Future[(Any, Any)] = Executor.execute(
-        SchemaType.schema, query, new MovieRepository(bsClient)
-      ).map(OK -> _)
-      .recover {
-        case error: QueryAnalysisError => BadRequest -> error.resolveError
-        case error: ErrorWithResolver => InternalServerError -> error.resolveError
-      }
-
-    Ok("KK")
+    val res: Future[Any] = Executor.execute(
+      SchemaType.schema,
+      query,
+      new MovieRepository(bsClient)
+    )/*.recover {
+        case error: QueryAnalysisError => Json.toJson("error" -> error.getMessage)
+        case error: ErrorWithResolver => Json.toJson("error" -> error.getMessage)
+      }*/
+    res.map(x => {
+      Logger.info(x.toString)
+      Ok(x.toString)
+    })
   }
 }
