@@ -13,6 +13,7 @@ import sangria.ast.Document
 import sangria.execution.{ErrorWithResolver, Executor, QueryAnalysisError}
 import sangria.macros._
 import sangria.renderer.SchemaRenderer
+import sangria.marshalling.playJson._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import services.BetaSeries
@@ -56,11 +57,14 @@ class Back @Inject() (system: ActorSystem, config: Configuration, bsClient: Beta
       graphql"""
       query {
         movie(id: 135) {
+          backdrop
+          poster
+          director
           title
         }
       }
   """
-    val res: Future[Any] = Executor.execute(
+    val res: Future[JsValue] = Executor.execute(
       SchemaType.schema,
       query,
       new MovieRepository(bsClient)
@@ -70,7 +74,7 @@ class Back @Inject() (system: ActorSystem, config: Configuration, bsClient: Beta
       }*/
     res.map(x => {
       Logger.info(x.toString)
-      Ok(x.toString)
+      Ok(Json.toJson(x))
     })
   }
 }
