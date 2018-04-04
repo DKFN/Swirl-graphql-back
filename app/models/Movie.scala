@@ -8,4 +8,5 @@ case class Movie(
   releaseDate: String,
   director: String,
   synopsis: String,
+  comments: List[Comment]
 )
