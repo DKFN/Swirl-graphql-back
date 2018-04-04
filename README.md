@@ -1,7 +1,7 @@
 # Overview
 
 This project was made for EPITA front-end association.
-It is a simple GraphQL (Well.. at least in later revisions it will be) backend server who proxies the BetaSeries
+It is a simple GraphQL backend server who proxies the BetaSeries
 API in order to query this API with the GraphQL language.
 
 It is not mandatory to clone and run this project ! You can do it if you wish so, however accessing the backend via
@@ -16,7 +16,25 @@ PS: Don't expect to see some explanations on this repo, the subject should be en
 however if you are curious about the server and its implementation I would be happy to talk with a beer, and if there
 is too much beer-requests I might write a paper.
 
+# Usage
+You must get the schema from the server by doing a GET request to this URL :
+````
+http://swirl.deadlykungfu.ninja:9000/schema
+````
+
+You can then forward all your GraphQL requests to this route :
+```
+http://swirl.deadlykungfu.ninja:9000/graphql
+```
+
+# Building
+This project is using Scala Build Tools, for first run after installing
+sbt by yourself you can launch this command to start te server
+```
+sbt clean compile run
+```
+
 ## TODO
-- Define the Sangria Schema
-- Cache requests if possible
+- OK = Define the Sangria Schema
+- Decent = Cache requests if possible
 - Install GraphiQl to provide a simple space for testing and abusing queries
