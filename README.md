@@ -19,13 +19,34 @@ is too much beer-requests I might write a paper.
 # Usage
 You must get the schema from the server by doing a GET request to this URL :
 ````
-http://swirl.deadlykungfu.ninja:9000/schema
+GET  http://swirl.deadlykungfu.ninja:9000/schema
 ````
 
 You can then forward all your GraphQL requests to this route :
 ```
-http://swirl.deadlykungfu.ninja:9000/graphql
+POST http://swirl.deadlykungfu.ninja:9000/graphql
 ```
+
+You MUST pass your query in the body, here is an example query fetching the
+movie 'Intouchables' with some metas:
+```
+query {
+  movie(id: 135){
+    director
+    backdrop
+    title
+    comments {
+     id
+     login
+     avatar
+     text
+    }
+  }
+}
+```
+
+If there is a syntaxic error with your query it should give you the line number
+and the column number that caused the error
 
 # Building
 This project is using Scala Build Tools, for first run after installing
