@@ -34,7 +34,7 @@ class MovieRepository @Inject()(bsClient: BetaSeries) {
   }
 
   def getComments(id: Int): Future[List[Comment]] = {
-    val fetchingComments = bsClient.getComments(id);
+    val fetchingComments = bsClient.getComments(id)
     fetchingComments.map(z => {
       (z \ "comments").as[List[JsValue]].map(x => {
         Comment(
