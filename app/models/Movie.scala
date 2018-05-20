@@ -8,5 +8,6 @@ case class Movie(
   releaseDate: String,
   director: String,
   synopsis: String,
+  trailerYoutubeId: Option[String],
   comments: List[Comment]
 )
