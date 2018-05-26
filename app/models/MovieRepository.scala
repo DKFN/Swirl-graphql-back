@@ -10,9 +10,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class MovieRepository @Inject()(bsClient: BetaSeries) {
 
-  val stratesSet: Map[String, Set[Int]] = Map[String, Set[Int]](
-    "anime" -> Set(60678, 31435, 10745),
-    "soon" -> Set(62541, 62291, 60911, 28205)
+  val stratesSet: Map[String, StrateDef] = Map[String, StrateDef](
+    "anime" -> StrateDef("anime", Some("Live Actions"), Set(60678, 31435, 10745)),
+    "soon" -> StrateDef("soon", Some("Prochaines Sorties"), Set(62541, 62291, 60911, 28205))
   )
 
   def Movie(id: Int) = {
@@ -55,7 +55,7 @@ class MovieRepository @Inject()(bsClient: BetaSeries) {
 
   def Movies(ids: Seq[Int]) = Future.sequence(ids.map(Movie))
 
-  def getStrate(strate: String): Future[Seq[Movie]] = {
+  def getStrate(strate: String): Future[Strate] = {
     Logger.info(s"Asking strate : $strate")
 
     val maybeStrate = stratesSet.get(strate)
@@ -63,8 +63,8 @@ class MovieRepository @Inject()(bsClient: BetaSeries) {
     Logger.info(s"Asking strate : ${maybeStrate.map(x => x.toString)}")
 
     val gotten = maybeStrate match {
-      case Some(x: Set[Int]) => Movies(x.toSeq)
-      case _ => Movies(Seq.empty)
+      case Some(x: StrateDef) => Movies(x.movieIds.toSeq).map(Strate(strate, x.title, _))
+      case _ => Movies(Seq.empty).map(Strate(strate, None, _))
     }
     Logger.info(gotten.toString)
     gotten

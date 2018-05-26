@@ -44,6 +44,16 @@ object SchemaType {
     )
   )
 
+  var StrateType = ObjectType(
+    "Strate",
+    "A strate used to display a list of movies",
+    fields[Unit, Strate](
+      Field("name", StringType, resolve = _.value.name),
+      Field("title", StringType, resolve = _.value.title.orNull),
+      Field("movies", ListType(MovieType), resolve = _.value.movies)
+    )
+  )
+
   val QueryType = ObjectType("Query", fields[MovieRepository, Unit](
     Field("movie", OptionType(MovieType),
       description = Some("Returns a movie with given Id"),
@@ -55,12 +65,12 @@ object SchemaType {
       arguments = Ids :: Nil,
       resolve = c => c.ctx.Movies(c arg Ids)
     ),
-    Field("strate", ListType(MovieType),
+    Field("strate", StrateType,
       description = Some("Returns lists of movies with given themes."),
       arguments = Name :: Nil,
       resolve = c => c.ctx.getStrate(c arg Name)
     ),
-    Field("strates", ListType(ListType(MovieType)),
+    Field("strates", ListType(StrateType),
       description = Some("Returns lists of movies with given themes."),
       arguments = Names :: Nil,
       resolve = c => c.ctx.getStrates(c arg Names)
