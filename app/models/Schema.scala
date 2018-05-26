@@ -12,7 +12,10 @@ object SchemaType {
   val Id = Argument("id", IntType)
   val Ids = Argument("id", ListInputType(IntType))
   val Names = Argument("names", ListInputType(StringType))
+  val Name = Argument("name", StringType)
 
+  // TODO : Add a StrateType listing the fields and change the return
+  // TODO : type of the strate main query to a ListType(StrateType)
   val CommentType = ObjectType(
     "Comment",
     "An user comment about a movie",
@@ -31,10 +34,10 @@ object SchemaType {
     fields[Unit, Movie](
       Field("id", IntType, resolve = _.value.id),
       Field("title", StringType, resolve = _.value.title),
-      Field("poster", StringType, resolve = _.value.poster),
-      Field("backdrop", StringType, resolve = _.value.backdrop),
+      Field("poster", StringType, resolve = _.value.poster.orNull),
+      Field("backdrop", StringType, resolve = _.value.backdrop.orNull),
       Field("releaseDate", StringType, resolve = _.value.releaseDate),
-      Field("director", StringType, resolve = _.value.director),
+      Field("director", StringType, resolve = _.value.director.orNull),
       Field("synopsis", StringType, resolve = _.value.synopsis),
       Field("trailerYoutubeId", StringType, resolve = _.value.trailerYoutubeId.orNull),
       Field("comments", ListType(CommentType), resolve = _.value.comments)
@@ -52,10 +55,15 @@ object SchemaType {
       arguments = Ids :: Nil,
       resolve = c => c.ctx.Movies(c arg Ids)
     ),
-    Field("strates", ListType(MovieType),
+    Field("strate", ListType(MovieType),
+      description = Some("Returns lists of movies with given themes."),
+      arguments = Name :: Nil,
+      resolve = c => c.ctx.getStrate(c arg Name)
+    ),
+    Field("strates", ListType(ListType(MovieType)),
       description = Some("Returns lists of movies with given themes."),
       arguments = Names :: Nil,
-      resolve = c => c.ctx.homepageMovies(c arg Names)
+      resolve = c => c.ctx.getStrates(c arg Names)
     )
   ))
 

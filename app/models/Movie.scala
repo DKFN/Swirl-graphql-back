@@ -3,10 +3,10 @@ package models
 case class Movie(
   id: Int,
   title: String,
-  poster: String,
-  backdrop: String,
+  poster: Option[String],
+  backdrop: Option[String],
   releaseDate: String,
-  director: String,
+  director: Option[String],
   synopsis: String,
   trailerYoutubeId: Option[String],
   comments: List[Comment]

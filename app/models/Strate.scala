@@ -2,6 +2,6 @@ package models
 
 case class Strate (
   name: String,
-  title: String,
-  movies: Movie,
+  title: Option[String],
+  movies: List[Movie],
 )

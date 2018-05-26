@@ -10,13 +10,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class MovieRepository @Inject()(bsClient: BetaSeries) {
 
-  val stratesSet: Map[String, Set[Int]] = Map[String, Set[Int]]()
-
-  def initStratesSet(): Unit = {
-    stratesSet ++ List(
-      "animes" -> Set(135, 2, 3)
-    )
-  }
+  val stratesSet: Map[String, Set[Int]] = Map[String, Set[Int]](
+    "anime" -> Set(60678, 31435, 10745),
+    "soon" -> Set(62541, 62291, 60911, 28205)
+  )
 
   def Movie(id: Int) = {
     val pendingMovies = bsClient.getMovie(id)
@@ -30,10 +27,10 @@ class MovieRepository @Inject()(bsClient: BetaSeries) {
       new Movie(
         id,
         (x \ "title").as[String],
-        (x \ "poster").as[String],
-        (x \ "backdrop").as[String],
+        (x \ "poster").asOpt[String],
+        (x \ "backdrop").asOpt[String],
         (x \ "release_date").as[String],
-        (x \ "director").as[String],
+        (x \ "director").asOpt[String],
         (x \ "synopsis").as[String],
         (x \ "trailer").asOpt[String],
         comments
@@ -58,11 +55,22 @@ class MovieRepository @Inject()(bsClient: BetaSeries) {
 
   def Movies(ids: Seq[Int]) = Future.sequence(ids.map(Movie))
 
-  // TODO : Homepage Movies must display a selection of movie depeding on the passed strates
-  // TODO : Defaults to homepage
-  def homepageMovies(strates: Seq[String]) = {
-    initStratesSet()
-    Logger.debug(strates.map(x => stratesSet.get(x)).toString)
-    Movies(List(132, 1 , 2))
+  def getStrate(strate: String): Future[Seq[Movie]] = {
+    Logger.info(s"Asking strate : $strate")
+
+    val maybeStrate = stratesSet.get(strate)
+
+    Logger.info(s"Asking strate : ${maybeStrate.map(x => x.toString)}")
+
+    val gotten = maybeStrate match {
+      case Some(x: Set[Int]) => Movies(x.toSeq)
+      case _ => Movies(Seq.empty)
+    }
+    Logger.info(gotten.toString)
+    gotten
+  }
+
+  def getStrates(strates: Seq[String]) = {
+    Future.sequence(strates.map(getStrate))
   }
 }
