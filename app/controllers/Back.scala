@@ -59,7 +59,9 @@ class Back @Inject() (system: ActorSystem, config: Configuration, bsClient: Beta
       case Success(qryAst: Document) => subExecutor(qryAst)
       case Failure(err) => Future.successful(Json.toJson("Cannot parse query ast build failed"))
     }
-    res.map(x => Ok(Json.toJson(x))
+    res.map(x => Ok(Json.toJson(x)).withHeaders(
+            "Access-Control-Allow-Origin" -> "*" 
+     )
    )
   }
 

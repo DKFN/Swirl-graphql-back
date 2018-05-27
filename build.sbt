@@ -3,6 +3,8 @@ description := "A very simple backend server for GraphQL queries written with Pl
 
 version := "0.1"
 
+lazy val root = (project in file(".")).enablePlugins(PlayScala)
+
 scalaVersion := "2.12.4"
 
 libraryDependencies ++= Seq(
@@ -15,4 +17,3 @@ libraryDependencies ++= Seq(
 
 routesGenerator := InjectedRoutesGenerator
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
