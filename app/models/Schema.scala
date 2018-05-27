@@ -49,7 +49,7 @@ object SchemaType {
     "A strate used to display a list of movies",
     fields[Unit, Strate](
       Field("name", StringType, resolve = _.value.name),
-      Field("title", StringType, resolve = _.value.title.orNull),
+      Field("title", StringType, resolve = _.value.title.getOrElse("Strate not found !")),
       Field("movies", ListType(MovieType), resolve = _.value.movies)
     )
   )

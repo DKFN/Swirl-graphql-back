@@ -14,8 +14,8 @@ class MovieRepository @Inject()(bsClient: BetaSeries) {
     "anime" -> StrateDef("anime", Some("Live Actions"), Set(60678, 31435, 10745)),
     "soon" -> StrateDef("soon", Some("Prochaines Sorties"), Set(62541, 62291, 60911, 28205)),
     "drames" -> StrateDef("Drame", Some("Films Dramatiques"), Set(3456, 4313, 142)),
-    // Hannibal, le silence des agnaux, dragon rouge, panic room, hanibal lecter les origines du mal , l'associe du diable, pulp fiction
-    "thrillers" -> StrateDef("thrillers", Some("Thrillers"), Set(187, 3801, 3814, 3802))
+    "thrillers" -> StrateDef("thrillers", Some("Thrillers"), Set(187, 3801, 3814, 3802)),
+    "noirblanc" -> StrateDef("noirblanc", Some("Films classiques"), Set(260, 2687, 6905, 2059, 6712, 224))
   )
 
   def Movie(id: Int) = {
