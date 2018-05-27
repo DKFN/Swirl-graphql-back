@@ -57,17 +57,12 @@ class MovieRepository @Inject()(bsClient: BetaSeries) {
 
   def getStrate(strate: String): Future[Strate] = {
     Logger.info(s"Asking strate : $strate")
-
     val maybeStrate = stratesSet.get(strate)
-
     Logger.info(s"Asking strate : ${maybeStrate.map(x => x.toString)}")
-
-    val gotten = maybeStrate match {
+     maybeStrate match {
       case Some(x: StrateDef) => Movies(x.movieIds.toSeq).map(Strate(strate, x.title, _))
       case _ => Movies(Seq.empty).map(Strate(strate, None, _))
     }
-    Logger.info(gotten.toString)
-    gotten
   }
 
   def getStrates(strates: Seq[String]) = {

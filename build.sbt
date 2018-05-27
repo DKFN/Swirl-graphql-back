@@ -12,7 +12,9 @@ libraryDependencies ++= Seq(
   filters,
   ws,
   "org.sangria-graphql" %% "sangria" % "1.3.0",
-  "org.sangria-graphql" %% "sangria-play-json" % "1.0.4"
+  "org.sangria-graphql" %% "sangria-play-json" % "1.0.4",
+  "com.kenshoo" %% "metrics-play" % "2.6.2_0.6.1"
+
 )
 
 routesGenerator := InjectedRoutesGenerator
