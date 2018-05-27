@@ -6,6 +6,7 @@ import akka.actor.ActorSystem
 import models.{MovieRepository, SchemaType}
 import play.api.Configuration
 import play.api.Logger
+import play.api.libs.json.JsResult.Exception
 import play.api.libs.json._
 import play.api.mvc._
 import sangria.ast.Document
@@ -15,8 +16,8 @@ import sangria.renderer.SchemaRenderer
 import sangria.marshalling.playJson._
 import sangria.parser.QueryParser
 import sangria.ast.Document
-import scala.util._
 
+import scala.util._
 import scala.concurrent.ExecutionContext.Implicits.global
 import services.BetaSeries
 
@@ -55,10 +56,13 @@ class Back @Inject() (system: ActorSystem, config: Configuration, bsClient: Beta
   }
 
   def graphql(): Action[AnyContent] = Action.async { implicit request =>
-    val res = QueryParser.parse(request.body.asText.getOrElse("")) match {
+    val query = request.body.asText.getOrElse("")
+    Logger.info(s"Input Query : $query")
+    val res = QueryParser.parse(query) match {
       case Success(qryAst: Document) => subExecutor(qryAst)
-      case Failure(err) => Future.successful(Json.toJson("Cannot parse query ast build failed"))
+      case Failure(err) => Future.successful(Json.obj("queryError" -> "Cannot parse query ast build failed"))
     }
+
     res.map(x => Ok(Json.toJson(x)).withHeaders(
             "Access-Control-Allow-Origin" -> "*" 
      )

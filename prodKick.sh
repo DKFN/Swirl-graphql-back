@@ -1,4 +1,4 @@
-delOld="sudo rm -rf /root/Swirl-graphql-back/swirl-graphql-backend-0.1/"
+delOld="rm -rf ./Swirl-graphql-back/swirl-graphql-backend-0.1/"
 playRun="./swirl-graphql-backend-0.1/bin/swirl-graphql-backend -Dplay.http.secret.key=SwirlIsMagic"
 
 git pull --rebase

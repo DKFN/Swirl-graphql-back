@@ -86,7 +86,7 @@ class BetaSeries @Inject() (client: WSClient, config: Configuration) {
   def handleResponse(x: WSResponse) = {
     val message = s"${x.status.toString} - ${x.statusText} \n ${Json.prettyPrint(x.json)}"
     if (x.status == 200) {
-      Logger.info(message)
+      Logger.debug(message)
       x.json
     } else {
       Logger.error(message)
