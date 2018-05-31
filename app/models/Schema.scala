@@ -13,9 +13,8 @@ object SchemaType {
   val Ids = Argument("id", ListInputType(IntType))
   val Names = Argument("names", ListInputType(StringType))
   val Name = Argument("name", StringType)
+  val Query = Argument("query", StringType)
 
-  // TODO : Add a StrateType listing the fields and change the return
-  // TODO : type of the strate main query to a ListType(StrateType)
   val CommentType = ObjectType(
     "Comment",
     "An user comment about a movie",
@@ -37,7 +36,7 @@ object SchemaType {
       Field("poster", StringType, resolve = _.value.poster.orNull),
       Field("backdrop", StringType, resolve = _.value.backdrop.orNull),
       Field("releaseDate", StringType, resolve = _.value.releaseDate),
-      Field("director", StringType, resolve = _.value.director.orNull),
+      Field("director", StringType, resolve = _.value.director.getOrElse("No director found")),
       Field("synopsis", StringType, resolve = _.value.synopsis),
       Field("trailerYoutubeId", StringType, resolve = _.value.trailerYoutubeId.orNull),
       Field("comments", ListType(CommentType), resolve = _.value.comments)
@@ -74,6 +73,11 @@ object SchemaType {
       description = Some("Returns lists of movies with given themes."),
       arguments = Names :: Nil,
       resolve = c => c.ctx.getStrates(c arg Names)
+    ),
+    Field("search", ListType(MovieType),
+      description = Some("Returns the list of movies matching the asked query string"),
+      arguments = Query :: Nil,
+      resolve = c => c.ctx.searchMovies(c arg Query)
     )
   ))
 

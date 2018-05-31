@@ -14,10 +14,10 @@ class MovieRepository @Inject()(bsClient: BetaSeries) {
     "anime" -> StrateDef("anime", Some("Films d'animation Japonais"), Set(3077, 5915, 5913, 232, 2908)),
     "soon" -> StrateDef("soon", Some("Prochaines Sorties"), Set(62541, 62291, 60911, 28205)),
     "drames" -> StrateDef("drame", Some("Films Dramatiques"), Set(3456, 4313, 142, 20104, 582, 2118)),
-    "horreur" -> StrateDef("horreur", Some("Filrs d'horreur"), Set(5599, 3547, 4366, 491, 8254)),
+    "horreur" -> StrateDef("horreur", Some("Films d'horreur"), Set(5599, 3547, 4366, 491, 8254)),
     "fantastique" -> StrateDef("fantastique", Some("Films fantastiques"), Set(31798, 429, 8187, 4789)),
     "sciencefiction" -> StrateDef("sciencefiction", Some("Science Fiction"), Set(359, 3603, 662, 6, 308)),
-    "thrillers" -> StrateDef("thrillers", Some("Thrillers"), Set(187, 3801, 3814, 3802)),
+    "thrillers" -> StrateDef("thrillers", Some("Thrillers"), Set(187, 3801, 3814, 3802, 6365)),
     "noirblanc" -> StrateDef("noirblanc", Some("Films classiques"), Set(260, 2687, 6905, 2059, 6712, 224))
   )
 
@@ -73,5 +73,16 @@ class MovieRepository @Inject()(bsClient: BetaSeries) {
 
   def getStrates(strates: Seq[String]) = {
     Future.sequence(strates.map(getStrate))
+  }
+
+  def searchMovies(query: String): Future[List[Movie]] = {
+
+    val searchQueryIds: Future[Seq[Int]] = bsClient.getSearch(query)
+        .map((x) => (x \ "movies").as[Seq[JsValue]].map(y => (y \ "id").as[Int]))
+
+    searchQueryIds
+      .map(x => x.map(y => Movie(y)).toList)
+      .map(x => Future.sequence(x))
+      .flatten
   }
 }
