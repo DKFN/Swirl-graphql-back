@@ -7,4 +7,5 @@ $delOld
 unzip ./target/universal/swirl-graphql-backend-0.1.zip
 
 #while true; do $dellOld; $playRun; done
-$playRun & disown
+
+$playRun &>> prod.log & disown
