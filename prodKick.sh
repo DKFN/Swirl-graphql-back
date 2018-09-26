@@ -4,7 +4,7 @@ playRun="./swirl-graphql-backend-0.1/bin/swirl-graphql-backend -Dplay.http.secre
 git pull --rebase
 sbt clean compile dist
 $delOld
-unzip ./target/universal/swirl-graphql-backend-0.1.zip
+unzip -o ./target/universal/swirl-graphql-backend-0.1.zip
 
 #while true; do $dellOld; $playRun; done
 
