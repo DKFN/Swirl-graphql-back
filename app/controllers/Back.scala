@@ -1,7 +1,8 @@
 package controllers
 
-import javax.inject.Inject
+import java.io
 
+import javax.inject.Inject
 import akka.actor.ActorSystem
 import models.{MovieRepository, SchemaType}
 import play.api.Configuration
@@ -56,14 +57,22 @@ class Back @Inject() (system: ActorSystem, config: Configuration, bsClient: Beta
   }
 
   def graphql(): Action[AnyContent] = Action.async { implicit request =>
-    val query = request.body.asText.getOrElse("")
+    // TODO Try parse as json
+    val isJson = request.body.asJson
+    val query = request.body.asText
+
+    Logger.info(s"Input Query : $isJson")
+    val finalQuery = isJson
+      .flatMap(x => (x \ "query").asOpt[String])
+      .getOrElse(query.getOrElse(throw new RuntimeException("No body")))
+
     Logger.info(s"Input Query : $query")
-    val res = QueryParser.parse(query) match {
+    val res = QueryParser.parse(finalQuery) match {
       case Success(qryAst: Document) => subExecutor(qryAst)
       case Failure(err) => Future.successful(Json.obj("queryError" -> "Cannot parse query ast build failed"))
     }
 
-    res.map(x => Ok(Json.toJson(x)).withHeaders(
+    res.map((x: JsValue) => Ok(x.as[JsObject]).withHeaders(
             "Access-Control-Allow-Origin" -> "*" 
      )
    )
