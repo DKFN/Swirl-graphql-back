@@ -56,9 +56,9 @@ class Back @Inject() (system: ActorSystem, config: Configuration, bsClient: Beta
   }
 
   def graphql(): Action[AnyContent] = Action.async { implicit request =>
-    val query = request.body.asText.getOrElse("")
+    val query = request.body.asJson.get.as[JsObject]
     Logger.info(s"Input Query : $query")
-    val res = QueryParser.parse(query) match {
+    val res = QueryParser.parse((query \ "query").as[String]) match {
       case Success(qryAst: Document) => subExecutor(qryAst)
       case Failure(err) => Future.successful(Json.obj("queryError" -> "Cannot parse query ast build failed"))
     }
